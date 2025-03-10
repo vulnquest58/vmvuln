@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Script Name: vmvuln
+# Description: Installs VMware Tools (Open VM Tools) on an Ubuntu system.
+
+# Main function to install VMware Tools
+install_vmware_tools() {
+    echo "=== Starting VMware Tools Installation ==="
+
+    # Check if Open VM Tools are already installed
+    if dpkg -l | grep -q open-vm-tools; then
+        echo "=== Open VM Tools are already installed. Exiting. ==="
+        exit 0
+    fi
+
+    # Update package lists
+    echo "=== Updating package lists ==="
+    sudo apt update -y || { echo "Failed to update package lists"; exit 1; }
+
+    # Upgrade existing packages
+    echo "=== Upgrading existing packages ==="
+    sudo apt upgrade -y || { echo "Failed to upgrade packages"; exit 1; }
+
+    # Install Open VM Tools
+    echo "=== Installing Open VM Tools ==="
+    sudo apt install -y open-vm-tools open-vm-tools-desktop || { echo "Failed to install Open VM Tools"; exit 1; }
+
+    # Verify installation
+    if dpkg -l | grep -q open-vm-tools; then
+        echo "=== Open VM Tools installed successfully ==="
+    else
+        echo "=== Failed to install Open VM Tools ==="
+        exit 1
+    fi
+
+    # Prompt for system reboot
+    echo "=== System reboot required ==="
+    read -p "Do you want to reboot the system now? (y/n): " restart
+    if [[ "$restart" == "y" || "$restart" == "Y" ]]; then
+        sudo reboot
+    else
+        echo "=== Please reboot the system manually later ==="
+    fi
+}
+
+# Execute the main function
+install_vmware_tools
